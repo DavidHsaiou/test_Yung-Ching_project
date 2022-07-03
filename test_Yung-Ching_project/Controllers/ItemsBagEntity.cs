@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using test_Yung_Ching_project.Exceptions;
 using test_Yung_Ching_project.Models;
 using test_Yung_Ching_project.Services;
