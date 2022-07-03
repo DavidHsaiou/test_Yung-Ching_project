@@ -7,24 +7,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using test_Yung_Ching_project.Data;
 using test_Yung_Ching_project.Models;
+using test_Yung_Ching_project.Services;
 
 namespace test_Yung_Ching_project.Controllers
 {
     public class ItemsBagEntity : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ItemService _service;
 
-        public ItemsBagEntity(ApplicationDbContext context)
+        public ItemsBagEntity(ItemService service)
         {
-            _context = context;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         // GET: ItemsBagEntity
         public async Task<IActionResult> Index()
         {
-              return _context.ItemModel != null ? 
-                          View(await _context.ItemModel.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.ItemModel'  is null.");
+            try
+            {
+               return View(await _service.GetList());
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         // GET: ItemsBagEntity/Details/5
