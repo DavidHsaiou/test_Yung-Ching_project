@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using test_Yung_Ching_project.Data;
+using test_Yung_Ching_project.Exceptions;
 using test_Yung_Ching_project.Models;
 using test_Yung_Ching_project.Services;
 
@@ -36,19 +31,24 @@ namespace test_Yung_Ching_project.Controllers
         // GET: ItemsBagEntity/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.ItemModel == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var itemModel = await _context.ItemModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (itemModel == null)
+            try
+            {
+                var detail = await _service.GetDetail(id.Value);
+                return View(detail);
+            }
+            catch (ItemNotFoundException)
             {
                 return NotFound();
             }
-
-            return View(itemModel);
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         // GET: ItemsBagEntity/Create
@@ -66,27 +66,34 @@ namespace test_Yung_Ching_project.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(itemModel);
-                await _context.SaveChangesAsync();
+                await _service.Create(itemModel);
                 return RedirectToAction(nameof(Index));
             }
+            
             return View(itemModel);
         }
 
         // GET: ItemsBagEntity/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.ItemModel == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var itemModel = await _context.ItemModel.FindAsync(id);
-            if (itemModel == null)
+            try
+            {
+                var itemModel = await _service.GetDetail(id.Value);
+                return View(itemModel);
+            }
+            catch (ItemNotFoundException)
             {
                 return NotFound();
             }
-            return View(itemModel);
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         // POST: ItemsBagEntity/Edit/5
@@ -105,19 +112,15 @@ namespace test_Yung_Ching_project.Controllers
             {
                 try
                 {
-                    _context.Update(itemModel);
-                    await _context.SaveChangesAsync();
+                    await _service.Edit(itemModel);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (ItemNotFoundException)
                 {
-                    if (!ItemModelExists(itemModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
+                }
+                catch (Exception ex)
+                {
+                    return Problem(ex.Message);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -127,19 +130,24 @@ namespace test_Yung_Ching_project.Controllers
         // GET: ItemsBagEntity/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.ItemModel == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var itemModel = await _context.ItemModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (itemModel == null)
+            try
+            {
+                var itemModel = await _service.GetDetail(id.Value);
+                return View(itemModel);
+            }
+            catch (ItemNotFoundException)
             {
                 return NotFound();
             }
-
-            return View(itemModel);
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         // POST: ItemsBagEntity/Delete/5
@@ -147,23 +155,16 @@ namespace test_Yung_Ching_project.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.ItemModel == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.ItemModel'  is null.");
+                await _service.Remove(id);
+                return RedirectToAction(nameof(Index));
             }
-            var itemModel = await _context.ItemModel.FindAsync(id);
-            if (itemModel != null)
+            catch (ItemNotFoundException ex)
             {
-                _context.ItemModel.Remove(itemModel);
+                return Problem(ex.Message);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
-        private bool ItemModelExists(int id)
-        {
-          return (_context.ItemModel?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }
