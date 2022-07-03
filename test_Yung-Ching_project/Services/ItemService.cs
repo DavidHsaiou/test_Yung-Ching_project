@@ -3,7 +3,7 @@ using test_Yung_Ching_project.Repositories;
 
 namespace test_Yung_Ching_project.Services;
 
-public class ItemService
+public class ItemService : IItemService
 {
     private readonly ItemRepo _itemRepo;
 

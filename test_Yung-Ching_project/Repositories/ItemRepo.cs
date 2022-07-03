@@ -5,7 +5,7 @@ using test_Yung_Ching_project.Models;
 
 namespace test_Yung_Ching_project.Repositories;
 
-public class ItemRepo
+public class ItemRepo : IItemRepo
 {
     private readonly ApplicationDbContext _context;
 
