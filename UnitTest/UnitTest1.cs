@@ -1,3 +1,6 @@
+using test_Yung_Ching_project.Repositories;
+using test_Yung_Ching_project.Services;
+
 namespace UnitTest;
 
 public class Tests
@@ -5,6 +8,8 @@ public class Tests
     [SetUp]
     public void Setup()
     {
+        // _itemRepo = new ItemRepo();
+        // _itemService = new ItemService();
     }
 
     [Test]

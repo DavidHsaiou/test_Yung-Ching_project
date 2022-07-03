@@ -5,9 +5,9 @@ namespace test_Yung_Ching_project.Services;
 
 public class ItemService : IItemService
 {
-    private readonly ItemRepo _itemRepo;
+    private readonly IItemRepo _itemRepo;
 
-    public ItemService(ItemRepo itemRepo)
+    public ItemService(IItemRepo itemRepo)
     {
         _itemRepo = itemRepo ?? throw new ArgumentNullException(nameof(itemRepo));
     }

@@ -13,7 +13,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddTransient<ItemService>();
-builder.Services.AddTransient<ItemRepo>();
+builder.Services.AddTransient<IItemRepo>(sp =>
+{
+    var dbSet = sp.GetRequiredService<ApplicationDbContext>();
+    return new ItemRepo(dbSet);
+});
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
