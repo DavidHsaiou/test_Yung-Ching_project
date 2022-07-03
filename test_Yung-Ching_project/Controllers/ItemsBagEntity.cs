@@ -66,8 +66,15 @@ namespace test_Yung_Ching_project.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _service.Create(itemModel);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _service.Create(itemModel);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    return Problem(ex.Message);
+                }
             }
             
             return View(itemModel);
